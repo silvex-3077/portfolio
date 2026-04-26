@@ -1,0 +1,49 @@
+---
+import { Icon } from 'astro-icon/components'
+
+interface Props {
+  className?: string;
+}
+const { className } = Astro.props;
+
+// データを配列で直書き（ここに追加していく）
+const notices = [
+  { date: "2026.04.28", type: "info", tag: "UPDATE", message: "ポートフォリオを公開しました" },
+];
+
+// タグの色分け設定
+const tagStyles: Record<string, string> = {
+  info: "bg-blue-50 text-blue-600 border-blue-200",
+  alert: "bg-red-50 text-red-600 border-red-200",
+  accent: "bg-yellow-50 text-yellow-600 border-yellow-200", // accent変数がなければ黄色指定
+  default: "bg-gray-50 text-gray-600 border-gray-200"
+};
+---
+
+<div class={`bg-gray-100 border border-gray-200 p-6 mb-6 ${className}`}>
+  <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-300/50">
+    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+      <Icon name="lucide:arrow-up-to-line" class="size-6" />
+      更新履歴
+    </h2>
+    <span class="text-xs font-mono text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
+      {notices.length} MESSAGES
+    </span>
+  </div>
+
+  <ul class="space-y-3 overflow-y-auto max-h-32 pr-2 scrollbar-thin">
+    {notices.map((item) => (
+      <li class="flex flex-col sm:flex-row sm:items-center gap-2 text-sm group">
+        <div class="flex items-center gap-3 shrink-0">
+          <span class="font-mono text-gray-400 text-xs">{item.date}</span>
+          <span class={`px-2 py-0.5 text-[10px] font-bold rounded border tracking-wider ${tagStyles[item.type] || tagStyles.default}`}>
+            {item.tag}
+          </span>
+        </div>
+        <span class="text-gray-700 line-clamp-1">
+          {item.message}
+        </span>
+      </li>
+    ))}
+  </ul>
+</div>

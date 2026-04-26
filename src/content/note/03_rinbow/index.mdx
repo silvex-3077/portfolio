@@ -1,0 +1,157 @@
+---
+title: 'Rinbow'
+description: 'Whenever you depend on Node packages with missing maintainers, patching becomes a necessary evil.'
+date: 2026-04-24
+tags: ['test']
+image: ''
+authors: ['enscribe']
+---
+
+## Rinbow とは
+
+RINBOW = Limbo + Rainbow
+
+辺獄に架かる虹を示す造語。
+
+絵を描くという行為自体が道楽の一つであることや、
+そもそもAIとの協同によって作られているこのアプリの存在は辺獄と呼ぶにふさわしい。
+ついでに、7色の虹から絵を描くというところを想起してもらえれば。
+
+
+ありとあらゆる画像編集アプリがあるにも関わらずこのアプリを作った理由としては、
+
+- 画像編集ソフトの作りを少しでも理解したかったから
+- 普段使いもしないような余計な機能が多すぎる現代の画像編集アプリに逆張りするため
+- 超軽量かつ超高速、最低限の機能で最大限のイラスト・画像素材作成ができるアプリが欲しかったから。
+
+AIを導入することが金輪際ないということ（制作にはAIを使っているのでそこはどうなのかという話は置いておいて）もあり、
+フレームワークによる煩雑なものを除けば、余計な激重処理を消すことができると考えたため。
+
+拡張機能によるフィルターや図形といったものを後付けで導入するプラグイン方式のカスタマイズの発想はAVIUTLから。
+
+
+
+★現在実装済みの機能
+
+### 構成
+```
+ src/
+ ├── 📂 assets/
+ ├── 📂 types/
+ │   ├── index.ts            # 全体エクスポート用
+ │   ├── Layer.ts            # Layer, LayerType, BlendingMode
+ │   ├── Brush.ts            # BrushPreset (筆圧・速度・間隔設定含む)
+ │   ├── Filter.ts           # FilterConfig, FilterDefinition
+ │   └── Project.ts          # 保存ファイルの構造 (.rinbow)
+ │
+ ├── 📂 store/
+ │   ├── canvasStore.ts      # ズーム率, パン位置, キャンバスサイズ, 背景色
+ │   ├── layerStore.ts       # レイヤー一覧, 選択中のID, 履歴(Undo/Redo)
+ │   └── toolStore.ts        # 現在のツール, アクティブなブラシ設定, カラー
+ │
+ ├── 📂 logic/
+ │   ├── BrushEngine.ts      # ✒️ 描画クラス (スタンプ/台形補間/物理演算入り)
+ │   ├── HistoryManager.ts   # 📜 履歴管理 (ImageBitmapのメモリ管理)
+ │   ├── FilterRegistry.ts   # 🎨 フィルタの定義とCSS変換ロジック
+ │   ├── FillLogic.ts        # バケツ・マジック消しゴム (隣接/全体判定)
+ │   ├── Geometry.ts         # 📐 幾何学計算 (ベジェ曲線, 距離計算など)
+ │   └── FileIO.ts           # 💾 保存・読込・エクスポート (Tauri API)
+ │
+ ├── 📂 hooks/
+ │   ├── useShortcuts.ts     # キーボードショートカット管理
+ │   └── useCanvasEvents.ts  # PointerEvent (筆圧対応) のハンドリング
+ │
+ ├── 📂 components/
+ │   ├── 📂 layout/
+ │   │   ├── TitleBar.tsx    # ウィンドウタイトルバー (Windows用)
+ │   │   ├── SidebarLeft.tsx # ツールバー (左)
+ │   │   ├── SidebarRight.tsx# プロパティパネル (右)
+ │   │   └── MainLayout.tsx  # 全体レイアウト
+ │   │
+ │   ├── 📂 canvas/
+ │   │   ├── Viewport.tsx    # ズーム・パン・スクロールの制御枠
+ │   │   ├── EditorCanvas.tsx# 実際のCanvas要素 (描画・イベント受取)
+ │   │   └── Overlays.tsx    # カーソル, バネの紐, グリッド, 選択枠
+ │   │
+ │   ├── 📂 panels/
+ │   │   ├── LayerPanel.tsx  # レイヤーリスト (D&D対応)
+ │   │   ├── FilterPanel.tsx # フィルタ設定 (スライダー一覧)
+ │   │   ├── ToolOptions.tsx # ツール詳細設定 (動的に切り替え)
+ │   │   └── BrushLibrary.tsx# ブラシプリセット一覧
+ │   │
+ │   └── 📂 widgets/
+ │       ├── Accordion.tsx   # 開閉メニュー
+ │       ├── NumberSlider.tsx# スライダー + 数値入力
+ │       └── ColorPicker.tsx # 色選択
+ │
+ ├── App.tsx                 # アプリのルート (Layoutを呼ぶだけ)
+ ├── index.tsx               # エントリーポイント
+ └── App.css                 # Tailwind読み込み
+```
+
+### Requrement
+
+```
+ # cargo
+ [dependencies]
+ tauri = { version = "2", features = [] }
+ serde = { version = "1", features = ["derive"] }
+ serde_json = "1"
+ tauri-plugin-fs = "2"
+ tauri-plugin-opener = "2"
+ tauri-plugin-dialog = "2"
+ tauri-plugin-single-instance = "2.3.6"
+ 
+ # pnpm node_module
+ "license": "MIT",
+ "dependencies": {
+   "@msgpack/msgpack": "^3.1.2",
+   "@tauri-apps/api": "^2",
+   "@tauri-apps/plugin-dialog": "~2.4.2",
+   "@tauri-apps/plugin-fs": "~2.4.4",
+   "@tauri-apps/plugin-opener": "^2",
+   "pako": "^2.1.0",
+   "solid-js": "^1.9.3"
+ },
+ "devDependencies": {
+   "@tailwindcss/vite": "^4.1.17",
+   "@tauri-apps/cli": "^2",
+   "@types/pako": "^2.0.4",
+   "tailwindcss": "^4.1.17",
+   "typescript": "~5.6.2",
+   "vite": "^6.0.3",
+   "vite-plugin-solid": "^2.11.0"
+ }
+```
+
+### 機能
+
+```
+マウス前提
+```
+
+### 参考資料
+
+- pnpmまとめ https://qiita.com/yamapiiii/items/285781ce58bac7731388
+- Rust/Tauriに入門したので画像変換デスクトップアプリを開発した https://www.halpost.tech/posts/page/rust/rust_tavif
+
+Tauri plugin
+ https://zenn.dev/playree/articles/5e2f1386dde48f
+ https://zenn.dev/playree/articles/04242346d343e6
+
+PSDファイルの仕様について
+https://qiita.com/vram/items/2632cb9ed2dec9430f59
+
+ICOファイルのコンバータ
+https://www.icoconverter.com/
+
+ツールアイコン素材
+https://phosphoricons.com/?weight=bold&size=24
+
+
+https://blog.kisgraph.com/clipstudiopaint-layout/
+https://animehack.jp/image/clstp-scaling.html
+https://support.clip-studio.com/ja-jp/faq/articles/20200108
+https://help.clip-studio.com/ja-jp/manual_jp/240_brushes/ブラシをカスタマイズする.htm
+https://help.clip-studio.com/ja-jp/manual_jp/060_pc/Windows__47_macOSのインターフェース.htm#XREF_14975__Windows_macOSのインターフェース21
+https://comic.smiles55.jp/guide/10016/
