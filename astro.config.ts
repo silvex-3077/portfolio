@@ -21,7 +21,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   site: 'https://silvex-3077.github.io', 
-  base: '/',
+  base: '/portfolio/',
   integrations: [mdx(), react(), sitemap(), icon()],
   vite: {
     plugins: [tailwindcss() as any],
