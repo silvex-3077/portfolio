@@ -23,6 +23,8 @@ export default defineConfig({
   site: 'https://portfolio.github.io',
   integrations: [mdx(), react(), sitemap(), icon()],
   vite: {
+    resolve: { mainFields: ['module', 'jsnext:main', 'jsnext'], }, // Oxcリゾルバー（新しいやつ）を無効化し、従来のリゾルバーを使う
+    css: { transformer: 'lightningcss',}, // もし設定していなければ
     plugins: [tailwindcss() as any],
   },
   server: {
