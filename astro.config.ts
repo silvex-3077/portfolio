@@ -23,7 +23,7 @@ export default defineConfig({
   site: 'https://portfolio.github.io',
   integrations: [mdx(), react(), sitemap(), icon()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss() as any],
   },
   server: {
     port: 1234,
