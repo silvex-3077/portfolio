@@ -20,7 +20,8 @@ import type { ExpressiveCodeTheme } from 'rehype-expressive-code'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  site: 'https://portfolio.github.io',
+  site: 'https://silvex-3077.github.io', 
+  base: '/portfolio',
   integrations: [mdx(), react(), sitemap(), icon()],
   vite: {
     plugins: [tailwindcss() as any],
