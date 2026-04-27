@@ -4,7 +4,7 @@ export const SITE: Site = {
   title: 'silvex-3077',
   description:
     '本サイトは astro-erudite をベースに制作されています',
-  href: 'https://astro-erudite.vercel.app',
+  href: 'https://github.com/silvex-3077',
   author: 'silvex-3077',
   locale: 'ja',
   featuredPostCount: 5,
