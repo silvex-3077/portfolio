@@ -1,0 +1,68 @@
+---
+// 仮実装のため、現在は未使用
+
+
+import { Image, getImage } from 'astro:assets';
+import 'photoswipe/style.css';
+
+import image1 from '../assets/modicter_web.png';
+import image2 from '../assets/photo2.jpg';
+
+const images = [
+  { info: image1, alt: '風景1' },
+  { info: image2, alt: '風景2' },
+];
+
+const galleryImages = await Promise.all(
+  images.map(async (img) => {
+    const optimized = await getImage({ src: img.info });
+    return {
+      src: optimized.src,
+      width: img.info.width,
+      height: img.info.height,
+      alt: img.alt,
+    };
+  })
+);
+---
+
+<div class="pswp-gallery" id="my-gallery">
+  {images.map((img) => (
+    <a
+      href={img.info.src}
+      data-pswp-width={img.info.width}
+      data-pswp-height={img.info.height}
+      target="_blank"
+    >
+      <Image src={img.info} width={300} alt={img.alt} />
+    </a>
+  ))}
+</div>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  declare global {
+    interface Window {
+      pswpInitialized?: boolean;
+    }
+  }
+
+  const initLightbox = () => {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#my-gallery',
+      children: 'a',
+      pswpModule: () => import('photoswipe')
+    });
+    lightbox.init();
+  };
+
+  if (!window.pswpInitialized) {
+    initLightbox();
+    window.pswpInitialized = true; 
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initLightbox();
+  });
+</script>

@@ -2,8 +2,7 @@ import type { IconMap, SocialLink, Site } from '@/types'
 
 export const SITE: Site = {
   title: 'silvex-3077',
-  description:
-    '本サイトは astro-erudite をベースに制作されています',
+  description: '本サイトは astro-erudite をベースに制作されています',
   href: 'https://github.com/silvex-3077',
   author: 'silvex-3077',
   locale: 'ja',
@@ -36,7 +35,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     label: 'Email',
   },
   {
-    href: '/rss.xml',
+    href: '/portfolio/rss.xml',
     label: 'RSS',
   },
 ]
